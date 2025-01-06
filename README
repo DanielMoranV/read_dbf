@@ -1,0 +1,14 @@
+# Open a terminal and navigate to your project directory
+cd /c:/Users/Daniel/Desktop/DesarrolloWeb/read_dbf
+
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Windows
+venv\Scripts\activate
+
+# On Unix or MacOS
+# source venv/bin/activate
+
+ 
