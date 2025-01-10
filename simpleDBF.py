@@ -3,9 +3,14 @@ import os
 import csv
 import mysql.connector
 import time
-
-pathDataBases = 'C:/sisclin/DATA'
-outputFolder = 'C:/sisclin/TablasVFP'
+# Obtener los valores desde las variables de entorno
+pathDataBases = os.getenv('PATH_DATABASES', 'Z:/SoporteTi/sisclin//DATA')
+outputFolder = os.getenv('OUTPUT_FOLDER', 'C:/sisclin/TablasVFP')
+vfp_exe_path = os.getenv('VFP_EXE_PATH', 'ConvertirDBF.exe')
+mysql_host = os.getenv('MYSQL_HOST', 'localhost')
+mysql_user = os.getenv('MYSQL_USER', 'root')
+mysql_password = os.getenv('MYSQL_PASSWORD', '')
+mysql_database = os.getenv('MYSQL_DATABASE', 'db_sisclin')
 
 # Asegurarse de que la carpeta de salida exista
 os.makedirs(outputFolder, exist_ok=True)
