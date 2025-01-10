@@ -4,6 +4,7 @@ from tkinter import Tk, Label, Entry, Text, Button, StringVar, Scrollbar, Frame,
 from dotenv import load_dotenv
 from fastapi import FastAPI
 import uvicorn
+import time
 
 from convert_dbf_csv import convert_dbf_to_csv
 from import_csv_mysql import migrate_to_mysql
@@ -84,6 +85,7 @@ class VFPApp:
             self.toggle_server_button.config(text="Start Server")
 
     def run_migration(self):
+        start_time = time.time()
         self.log("Starting DBF to CSV and MySQL Migration...")
         path_databases = self.path_databases_var.get()
         output_folder = self.output_folder_var.get()
@@ -112,6 +114,10 @@ class VFPApp:
                 self.log(migration_message)
             except Exception as e:
                 self.log(f"Error: {e}")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Tiempo de ejecución de convert_dbf_to_csv: {
+            elapsed_time:.2f} segundos")
 
 
 if __name__ == "__main__":

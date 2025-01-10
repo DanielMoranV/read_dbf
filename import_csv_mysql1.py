@@ -1,6 +1,22 @@
 import mysql.connector
 import csv
 import time
+from fields import PREDEFINED_FIELDS
+from datetime import datetime
+
+
+# def convert_date(value, date_format):
+#     try:
+#         return datetime.strptime(value, date_format).strftime('%Y-%m-%d')
+#     except ValueError:
+#         return None
+
+
+# def convert_datetime(value, datetime_format):
+#     try:
+#         return datetime.strptime(value, datetime_format).strftime('%Y-%m-%d %H:%M:%S')
+#     except ValueError:
+#         return None
 
 
 def migrate_to_mysql(csv_path, table_name, mysql_config):
@@ -8,22 +24,39 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
     try:
         conn = mysql.connector.connect(**mysql_config)
         cursor = conn.cursor()
+        # Eliminar la tabla si ya existe
+        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
         with open(csv_path, 'r', encoding='latin-1') as csvfile:
             reader = csv.reader(csvfile)
             headers = next(reader)
+            # Convertir encabezados a mayúsculas
+            headers = [header.upper() for header in headers]
 
-            # Crear la tabla
-            cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+            # Obteniendo los campos predefinidos de fields.py
+            predefined_fields = PREDEFINED_FIELDS.get(table_name, {})
+
+            if predefined_fields:
+                # Crear tabla con campos y tipos predefinidos
+                fields_definitions = [f'{field} {
+                    predefined_fields[field]}' for field in headers if field in predefined_fields]
+            else:
+                # Crear tabla con todos los campos como TEXT
+                fields_definitions = [f'{header} TEXT' for header in headers]
+
+            # Asegurarse de que haya al menos un campo en la definición
+            if not fields_definitions:
+                raise Exception(f"No fields defined for table {table_name}")
+
             create_table_query = f"CREATE TABLE {
-                table_name} ({', '.join([f'{header} TEXT' for header in headers])})"
+                table_name} ({', '.join(fields_definitions)})"
             cursor.execute(create_table_query)
 
             # Desactivar índices y claves foráneas
             cursor.execute("SET foreign_key_checks = 0")
             cursor.execute(f"ALTER TABLE {table_name} DISABLE KEYS")
 
-            # Insertar datos en lotes
+            # Preparar consulta de inserción
             insert_query = f"INSERT INTO {table_name} ({', '.join(headers)}) VALUES ({
                 ', '.join(['%s'] * len(headers))})"
             batch_size = 1000
@@ -32,6 +65,7 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
             for row in reader:
                 if len(row) < len(headers):
                     row.extend([None] * (len(headers) - len(row)))
+
                 batch.append([None if value == '' else value for value in row])
 
                 if len(batch) == batch_size:
@@ -52,5 +86,6 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
             duration = end_time - start_time
             print(f"Tiempo total de migración: {duration:.2f} segundos")
             return f"Table {table_name} migrated successfully."
+
     except mysql.connector.Error as e:
         raise Exception(f"Error migrating table {table_name}: {e}")

@@ -72,7 +72,7 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
                         field_type = predefined_fields[header]
                         if field_type == 'DATE':
                             # Ajusta el formato según sea necesario
-                            row[i] = convert_date(row[i], '%m/%d/%Y')
+                            row[i] = convert_date(row[i], '%Y-%m-%d')
                         elif field_type in ['DATETIME', 'TIMESTAMP']:
                             # Ajusta el formato según sea necesario
                             row[i] = convert_datetime(
