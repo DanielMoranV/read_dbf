@@ -7,7 +7,7 @@ PREDEFINED_FIELDS = {
         'COD_PAC': 'VARCHAR(255)',
         'NOM_PAC': 'VARCHAR(255)',
         'COD_EMP': 'VARCHAR(255)',
-        'NUM_CIA': 'DECIMAL(10,2)',
+        'NUM_CIA': 'VARCHAR(255)',
         'DOCATE': 'VARCHAR(255)',
         'NDOCATE': 'VARCHAR(255)',
         'CAM_DOC': 'VARCHAR(255)',
@@ -344,7 +344,6 @@ PREDEFINED_FIELDS = {
         'FHM_SIS': 'TIMESTAMP',
         'DTO_SER': 'DECIMAL(10,2)',
         'ISDTO_SER': 'DECIMAL(10,2)',
-        'FEC_DOC': 'DATE'
     },
     'SC0022': {
         'NUM_PAG': 'VARCHAR(255)',
