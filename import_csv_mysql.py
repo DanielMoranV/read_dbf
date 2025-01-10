@@ -24,23 +24,32 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
     try:
         conn = mysql.connector.connect(**mysql_config)
         cursor = conn.cursor()
+        # Eliminar la tabla si ya existe
+        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
         with open(csv_path, 'r', encoding='latin-1') as csvfile:
             reader = csv.reader(csvfile)
             headers = next(reader)
+            # Convertir encabezados a mayúsculas
+            headers = [header.upper() for header in headers]
 
             # Obteniendo los campos predefinidos de fields.py
             predefined_fields = PREDEFINED_FIELDS.get(table_name, {})
 
             if predefined_fields:
                 # Crear tabla con campos y tipos predefinidos
-                create_table_query = f"CREATE TABLE {table_name} ({', '.join(
-                    [f'{field} {predefined_fields[field]}' for field in headers if field in predefined_fields])})"
+                fields_definitions = [f'{field} {
+                    predefined_fields[field]}' for field in headers if field in predefined_fields]
             else:
                 # Crear tabla con todos los campos como TEXT
-                create_table_query = f"CREATE TABLE {
-                    table_name} ({', '.join([f'{header} TEXT' for header in headers])})"
+                fields_definitions = [f'{header} TEXT' for header in headers]
 
+            # Asegurarse de que haya al menos un campo en la definición
+            if not fields_definitions:
+                raise Exception(f"No fields defined for table {table_name}")
+
+            create_table_query = f"CREATE TABLE {
+                table_name} ({', '.join(fields_definitions)})"
             cursor.execute(create_table_query)
 
             # Desactivar índices y claves foráneas
