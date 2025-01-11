@@ -1,6 +1,7 @@
 import os
+import schedule
 import threading
-from tkinter import Tk, Label, Entry, Text, Button, StringVar, Scrollbar, Frame, END
+from tkinter import Tk, Label, Entry, Text, Button, StringVar, Scrollbar, Frame, END, messagebox
 from dotenv import load_dotenv
 import uvicorn
 import time
@@ -86,6 +87,19 @@ class VFPApp:
             root, text="Run Conversion & Migration", command=self.run_migration)
         self.run_button.grid(row=3, column=1, pady=10)
 
+    def schedule_migration(self):
+        """Programar la migración diaria a las 00:00."""
+        schedule.every().day.at("00:00").do(self.run_migration)
+
+        def run_schedule():
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+
+        threading.Thread(target=run_schedule, daemon=True).start()
+        messagebox.showinfo(
+            "Programación", "Migración programada diariamente a las 00:00.")
+
     def log(self, message):
         self.console_text.insert(END, message + "\n")
         self.console_text.see(END)
@@ -153,4 +167,5 @@ if __name__ == "__main__":
 
     root = Tk()
     app = VFPApp(root)
+    app.schedule_migration()
     root.mainloop()
