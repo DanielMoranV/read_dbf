@@ -2,21 +2,36 @@ import os
 import threading
 from tkinter import Tk, Label, Entry, Text, Button, StringVar, Scrollbar, Frame, END
 from dotenv import load_dotenv
-from fastapi import FastAPI
 import uvicorn
 import time
+import sys
 
 from convert_dbf_csv import convert_dbf_to_csv
 from import_csv_mysql import migrate_to_mysql
 
-# FastAPI App
-app = FastAPI()
+
 server_thread = None
 is_server_running = False
 
 
+class TextRedirector:
+    def __init__(self, widget, tag="stdout"):
+        self.widget = widget
+        self.tag = tag
+
+    def write(self, message):
+        self.widget.insert(END, message, (self.tag,))
+        self.widget.see(END)
+
+    def flush(self):
+        pass
+
+    def isatty(self):
+        return False
+
+
 def start_server():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run('api:app', host="0.0.0.0", port=8080)
 
 
 class VFPApp:
@@ -57,6 +72,10 @@ class VFPApp:
             self.console_frame, command=self.console_text.yview)
         self.console_scrollbar.pack(side="right", fill="y")
         self.console_text.config(yscrollcommand=self.console_scrollbar.set)
+
+        # Redirect stdout and stderr to the console_text widget
+        sys.stdout = TextRedirector(self.console_text, "stdout")
+        sys.stderr = TextRedirector(self.console_text, "stderr")
 
         # Buttons
         self.toggle_server_button = Button(
@@ -116,12 +135,11 @@ class VFPApp:
                 self.log(f"Error: {e}")
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"Tiempo de ejecución de convert_dbf_to_csv: {
-            elapsed_time:.2f} segundos")
+        self.log(f"Tiempo de ejecución de convert_dbf_to_csv: {
+                 elapsed_time:.2f} segundos")
 
 
 if __name__ == "__main__":
-  # Cargar variables de entorno desde el archivo .env
     load_dotenv(".env")
 
     # Imprimir variables de entorno para verificar
@@ -133,6 +151,6 @@ if __name__ == "__main__":
     print("MYSQL_PASS:", os.getenv('MYSQL_PASS'))
     print("MYSQL_DB:", os.getenv('MYSQL_DB'))
 
-root = Tk()
-app = VFPApp(root)
-root.mainloop()
+    root = Tk()
+    app = VFPApp(root)
+    root.mainloop()
