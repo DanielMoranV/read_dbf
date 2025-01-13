@@ -33,6 +33,10 @@ def process_csv(csv_path, table_name):
     df = df[existing_fields]
     # filtered_row_count = len(df)
 
+    if 'fec_fac' in df.columns:
+        df['fec_fac'] = pd.to_datetime(
+            df['fec_fac'], format='%m/%d/%Y', errors='coerce')
+
     # Si el campo 'fec_doc' existe, procesar fechas
     if 'fec_doc' in df.columns:
         df['fec_doc'] = pd.to_datetime(
@@ -60,6 +64,36 @@ def process_csv(csv_path, table_name):
     # Identificar campos booleanos según el esquema definido
     boolean_fields = {field.lower(): field_type for field, field_type in PREDEFINED_FIELDS.get(
         table_name, {}).items() if field_type == 'BOOLEAN'}
+
+    # Si el campo num_doc existe, convertir a entero sin decimales y formatear con ceros a la izquierda
+    if 'num_doc' in df.columns:
+        df['num_doc'] = pd.to_numeric(df['num_doc'], errors='coerce')
+        df = df.dropna(subset=['num_doc'])
+        df['num_doc'] = df['num_doc'].round().astype(
+            int).astype(str).str.zfill(10)
+
+    if 'cod_ser' in df.columns:
+        df['cod_ser'] = pd.to_numeric(df['cod_ser'], errors='coerce')
+        df = df.dropna(subset=['cod_ser'])
+        df['cod_ser'] = df['cod_ser'].round().astype(
+            int)
+    if 'cod_pac' in df.columns:
+        df['cod_pac'] = pd.to_numeric(df['cod_pac'], errors='coerce')
+        df = df.dropna(subset=['cod_pac'])
+        df['cod_pac'] = df['cod_pac'].round().astype(
+            int)
+
+    if 'nh_pac' in df.columns:
+        df['nh_pac'] = pd.to_numeric(df['nh_pac'], errors='coerce')
+        df = df.dropna(subset=['nh_pac'])
+        df['nh_pac'] = df['nh_pac'].round().astype(
+            int)
+
+    if 'cod_cia' in df.columns:
+        df['cod_cia'] = pd.to_numeric(df['cod_cia'], errors='coerce')
+        df = df.dropna(subset=['cod_cia'])
+        df['cod_cia'] = df['cod_cia'].astype(
+            int).astype(str).str.zfill(2)
 
     # Convertir campos booleanos
     for field in boolean_fields:

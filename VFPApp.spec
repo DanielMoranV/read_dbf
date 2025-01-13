@@ -4,9 +4,9 @@
 a = Analysis(
     ['main.py'],
     pathex=[],
-    binaries=[],
-    datas=[],
-    hiddenimports=[],
+    binaries=[('ConvertirDBF.exe', '.'), ('dbf_query.exe', '.')],
+    datas=[('.env', '.'), ('convert_dbf_csv.py', '.'), ('import_csv_mysql.py', '.'), ('api.py', '.'), ('functions.py', '.')],
+    hiddenimports=['pandas', 'fastapi', 'dotenv', 'pydantic'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -1,5 +1,6 @@
 # api.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import os
 from functions import run_migration_logic
 from dotenv import load_dotenv
@@ -12,6 +13,21 @@ load_dotenv(override=True)
 
 data_source = os.getenv('PATH_DATABASES', 'Z:/SoporteTi/sisclin//DATA')
 app = FastAPI()
+
+# Configuración de CORS
+origins = [
+    "http://localhost:5173",
+    "https://www.csr.pe/"
+    # Añade aquí otros orígenes permitidos si es necesario
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class QueryModel(BaseModel):

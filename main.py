@@ -87,14 +87,22 @@ class VFPApp:
         self.console_scrollbar.pack(side="right", fill="y")
         self.console_text.config(yscrollcommand=self.console_scrollbar.set)
 
+        # Buttons Frame
+        self.buttons_frame = Frame(self.root)
+        self.buttons_frame.grid(row=3, column=0, columnspan=2, pady=10)
+
         # Buttons
         self.toggle_server_button = Button(
-            self.root, text="Start Server", command=self.toggle_server)
-        self.toggle_server_button.grid(row=3, column=0, pady=10)
+            self.buttons_frame, text="Start Server", command=self.toggle_server)
+        self.toggle_server_button.grid(row=0, column=0, padx=5)
 
         self.run_button = Button(
-            self.root, text="Run Conversion & Migration", command=self.run_migration)
-        self.run_button.grid(row=3, column=1, pady=10)
+            self.buttons_frame, text="Run Conversion & Migration", command=self.run_migration)
+        self.run_button.grid(row=0, column=1, padx=5)
+
+        self.upload_mysql_button = Button(
+            self.buttons_frame, text="Subir MySQL", command=self.upload_to_mysql)
+        self.upload_mysql_button.grid(row=0, column=2, padx=5)
 
     def _schedule_task(self):
         """Ejecuta las tareas programadas en segundo plano."""
@@ -161,6 +169,16 @@ class VFPApp:
             except Exception as e:
                 self.log(f"Error migrating {table}: {e}")
 
+    def upload_to_mysql(self):
+        start_time = time.time()
+        self.log("Starting DBF to CSV and MySQL Migration...")
+        output_folder = self.output_folder_var.get()
+        tables = self.tables_var.get().split(',')
+        self._migrate_tables_to_mysql(output_folder, tables)
+
+        elapsed_time = time.time() - start_time
+        self.log(f"Migration completed in {elapsed_time:.2f} seconds.")
+
     def run_migration(self):
         """Ejecuta la migración completa: conversión y carga a MySQL."""
         start_time = time.time()
@@ -179,6 +197,13 @@ class VFPApp:
 
 if __name__ == "__main__":
     load_dotenv(".env")
+    print("Variables de entorno cargadas:")
+    with open(".env") as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                key = line.split('=', 1)[0]
+                value = os.getenv(key)
+                print(f"{key}: {value}")
     root = Tk()
     app = VFPApp(root)
     app.schedule_migration()
