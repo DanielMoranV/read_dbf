@@ -33,20 +33,30 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
             # Convertir encabezados a mayúsculas
             headers = [header.upper() for header in headers]
 
-            # Obteniendo los campos predefinidos de fields.py
-            predefined_fields = PREDEFINED_FIELDS.get(table_name, {})
+           # Obteniendo los campos predefinidos y la llave primaria de PREDEFINED_FIELDS
+            predefined_table = PREDEFINED_FIELDS.get(table_name, {})
+            predefined_fields = predefined_table.get('fields', {})
 
             if predefined_fields:
                 # Crear tabla con campos y tipos predefinidos
-                fields_definitions = [f'{field} {
-                    predefined_fields[field]}' for field in headers if field in predefined_fields]
+                fields_definitions = [
+                    f'{field} {predefined_fields[field]}'
+                    for field in headers if field in predefined_fields
+                ]
             else:
                 # Crear tabla con todos los campos como TEXT
                 fields_definitions = [f'{header} TEXT' for header in headers]
 
             # Asegurarse de que haya al menos un campo en la definición
             if not fields_definitions:
-                raise Exception(f"No fields defined for table {table_name}")
+                raise Exception(
+                    f"No hay campos definidos para la tabla {table_name}.")
+
+            primary_key = PREDEFINED_FIELDS.get(
+                table_name, {}).get('primary_key')
+
+            if primary_key and primary_key in headers:
+                fields_definitions.append(f'PRIMARY KEY ({primary_key})')
 
             create_table_query = f"CREATE TABLE {
                 table_name} ({', '.join(fields_definitions)})"
@@ -55,6 +65,22 @@ def migrate_to_mysql(csv_path, table_name, mysql_config):
             # Desactivar índices y claves foráneas
             cursor.execute("SET foreign_key_checks = 0")
             cursor.execute(f"ALTER TABLE {table_name} DISABLE KEYS")
+            # Crear índices según las uniones y filtros comunes
+            indices = {
+                'SC0011': ['cod_ser', 'cod_emp', 'cod_pac', 'num_doc', 'fec_doc', 'tot_doc', 'nom_pac'],
+                'SC0006': ['cod_ser'],
+                'SC0002': ['cod_cia', 'nom_cia'],
+                'SC0003': ['cod_emp'],
+                'SC0004': ['cod_pac'],
+                'SC0033': ['num_doc'],
+                'SC0017': ['num_doc', 'num_fac'],
+                'SC0022': ['num_fac']
+            }
+
+            if table_name in indices:
+                for index in indices[table_name]:
+                    cursor.execute(f"CREATE INDEX idx_{table_name.lower()}_{
+                                   index} ON {table_name} ({index})")
 
             # Preparar consulta de inserción
             insert_query = f"INSERT INTO {table_name} ({', '.join(headers)}) VALUES ({

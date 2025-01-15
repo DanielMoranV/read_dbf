@@ -17,7 +17,8 @@ app = FastAPI()
 # Configuración de CORS
 origins = [
     "http://localhost:5173",
-    "https://www.csr.pe/"
+    "https://www.csr.pe/",
+    "http://localhost:5173",
     # Añade aquí otros orígenes permitidos si es necesario
 ]
 
