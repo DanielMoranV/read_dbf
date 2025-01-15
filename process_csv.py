@@ -2,6 +2,7 @@ import os
 import subprocess
 import pandas as pd
 from fields import PREDEFINED_FIELDS
+import chardet
 
 # dbf_path = "Z:/SoporteTi/sisclin/DATA/SC0011.DBF"
 # csv_path = "C:/sisclin/TablasVFP/SC0011.csv"
@@ -12,14 +13,24 @@ from fields import PREDEFINED_FIELDS
 def process_csv(csv_path, table_name):
     # print(f"Procesando archivo CSV: {csv_path}")
     # print(f"Tabla: {table_name}")
+    with open(csv_path, 'rb') as file:
+        result = chardet.detect(file.read(10000))
+
+    print(result['encoding'])
 
     # Leer el archivo CSV
-    df = pd.read_csv(csv_path, encoding='latin1', low_memory=False)
+    df = pd.read_csv(csv_path, encoding='latin-1',
+                     low_memory=False, on_bad_lines='warn', quotechar='"', quoting=1)
+
     # initial_row_count = len(df)
     # print(f"Cantidad de filas iniciales: {initial_row_count}")
 
-    # Convertir los nombres de las columnas a minúsculas
+    # if table_name == 'SC0033':
+    #     df['MOT_DEV'] = df['MOT_DEV'].str.replace('"', "'")
+
+    # print("Cabeceras originales:", df.columns.tolist())
     df.columns = df.columns.str.lower()
+    # print("Cabeceras después de convertir a minúsculas:", df.columns.tolist())
 
     # Obtener los campos permitidos para la tabla y convertirlos a minúsculas
     allowed_fields = [field.lower()
@@ -35,15 +46,12 @@ def process_csv(csv_path, table_name):
 
     if 'fec_fac' in df.columns:
         df['fec_fac'] = pd.to_datetime(
-            df['fec_fac'], format='%m/%d/%Y', errors='coerce')
+            df['fec_fac'], format='%d/%m/%Y', errors='coerce')
 
     # Si el campo 'fec_doc' existe, procesar fechas
     if 'fec_doc' in df.columns:
         df['fec_doc'] = pd.to_datetime(
-            df['fec_doc'], format='%m/%d/%Y', errors='coerce')
-        # Contar valores válidos
-        # valid_date_count = df['fec_doc'].notna().sum()
-        # print(f"Cantidad de fechas válidas en 'fec_doc': {valid_date_count}")
+            df['fec_doc'], format='%d/%m/%Y', errors='coerce')
 
         # Filtrar solo registros con fechas válidas en el rango especificado
         df = df[(df['fec_doc'] >= '2023-01-01') &
@@ -52,7 +60,7 @@ def process_csv(csv_path, table_name):
     # Si el campo 'fec_ser' existe, procesar fechas
     if 'fec_ser' in df.columns:
         df['fec_ser'] = pd.to_datetime(
-            df['fec_ser'], format='%m/%d/%Y', errors='coerce')
+            df['fec_ser'], format='%d/%m/%Y', errors='coerce')
         # Contar valores válidos
         # valid_date_count = df['fec_ser'].notna().sum()
         # print(f"Cantidad de fechas válidas en 'fec_ser': {valid_date_count}")
@@ -60,6 +68,13 @@ def process_csv(csv_path, table_name):
         # Filtrar solo registros con fechas válidas en el rango especificado
         df = df[(df['fec_ser'] >= '2023-01-01') &
                 (df['fec_ser'] <= pd.Timestamp.now())]
+
+    # Formatear 'fh_dev' a datetime
+    # if 'fh_dev' in df.columns:
+    #     print(df['fh_dev'])
+    #     df['fh_dev'] = pd.to_datetime(
+    #         df['fh_dev'], format='%d/%m/%Y %H:%M:%S', errors='coerce')
+    #     print(df['fh_dev'])
 
     # Identificar campos booleanos según el esquema definido
     boolean_fields = {field.lower(): field_type for field, field_type in PREDEFINED_FIELDS.get(
@@ -77,6 +92,13 @@ def process_csv(csv_path, table_name):
         df = df.dropna(subset=['cod_ser'])
         df['cod_ser'] = df['cod_ser'].round().astype(
             int)
+
+    if 'per_dev' in df.columns:
+        df['per_dev'] = pd.to_numeric(df['per_dev'], errors='coerce')
+        df = df.dropna(subset=['per_dev'])
+        df['per_dev'] = df['per_dev'].round().astype(
+            int)
+
     if 'cod_pac' in df.columns:
         df['cod_pac'] = pd.to_numeric(df['cod_pac'], errors='coerce')
         df = df.dropna(subset=['cod_pac'])
@@ -115,7 +137,7 @@ def process_csv(csv_path, table_name):
     #       final_row_count}")
 
     # Guardar el DataFrame filtrado de vuelta al archivo CSV
-    df.to_csv(csv_path, index=False, encoding='latin1')
+    df.to_csv(csv_path, index=False, encoding='latin-1')
 
 
 # process_csv(csv_path, table_name)

@@ -206,7 +206,7 @@ PREDEFINED_FIELDS = {
     },
     'SC0033': {
         'ID_DEV': 'VARCHAR(255)',
-        'FH_DEV': 'TIMESTAMP',
+        'FH_DEV': 'VARCHAR(255)',
         'PER_DEV': 'VARCHAR(255)',
         'NUM_FAC': 'VARCHAR(255)',
         'FEC_FAC': 'DATE',

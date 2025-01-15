@@ -7,8 +7,8 @@ import uvicorn
 import time
 import sys
 
-from convert_dbf_csv import convert_dbf_to_csv
-from import_csv_mysql import migrate_to_mysql
+from convert_dbf_xlxs import convert_dbf_to_xlsx
+from import_xlsx_mysql import migrate_xlsx_to_mysql
 
 
 class TextRedirector:
@@ -142,10 +142,10 @@ class VFPApp:
         os.makedirs(output_folder, exist_ok=True)
         for table in tables:
             dbf_path = os.path.join(path_databases, f"{table}.DBF")
-            csv_path = os.path.join(output_folder, f"{table}.csv")
+            xlsx_path = os.path.join(output_folder, f"{table}.xlsx")
             try:
-                convert_dbf_to_csv(dbf_path, csv_path)
-                self.log(f"Successfully converted {table}.DBF to {table}.csv")
+                convert_dbf_to_xlsx(dbf_path, xlsx_path)
+                self.log(f"Successfully converted {table}.DBF to {table}.xlsx")
             except Exception as e:
                 self.log(f"Error converting {table}: {e}")
 
@@ -161,10 +161,10 @@ class VFPApp:
         }
 
         for table in tables:
-            csv_path = os.path.join(output_folder, f"{table}.csv")
+            xlsx_path = os.path.join(output_folder, f"{table}.xlsx")
             try:
-                migration_message = migrate_to_mysql(
-                    csv_path, table, mysql_config)
+                migration_message = migrate_xlsx_to_mysql(
+                    xlsx_path, table, mysql_config)
                 self.log(migration_message)
             except Exception as e:
                 self.log(f"Error migrating {table}: {e}")
