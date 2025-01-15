@@ -2,7 +2,7 @@ import os
 import subprocess
 import pandas as pd
 from fields import PREDEFINED_FIELDS
-import chardet
+# import chardet
 
 # dbf_path = "Z:/SoporteTi/sisclin/DATA/SC0011.DBF"
 # csv_path = "C:/sisclin/TablasVFP/SC0011.csv"
@@ -13,10 +13,10 @@ import chardet
 def process_csv(csv_path, table_name):
     # print(f"Procesando archivo CSV: {csv_path}")
     # print(f"Tabla: {table_name}")
-    with open(csv_path, 'rb') as file:
-        result = chardet.detect(file.read(10000))
+    # with open(csv_path, 'rb') as file:
+    #     result = chardet.detect(file.read(10000))
 
-    print(result['encoding'])
+    # print(result['encoding'])
 
     # Leer el archivo CSV
     df = pd.read_csv(csv_path, encoding='latin-1',

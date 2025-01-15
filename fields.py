@@ -97,14 +97,12 @@ PREDEFINED_FIELDS = {
         'PROC_EMP': 'VARCHAR(255)',
         'USU_SIS': 'VARCHAR(255)',
         'UC_DOC': 'VARCHAR(255)',
-        'FHC_DOC': 'TIMESTAMP',
+        'FHC_DOC': 'VARCHAR(255)',
         'UM_DOC': 'VARCHAR(255)',
-        'FHM_DOC': 'TIMESTAMP',
         'CPRD_DOC': 'VARCHAR(255)',
         'NCG_DOC': 'VARCHAR(255)',
         'CCT_DOC': 'VARCHAR(255)',
         'COD_CIR': 'VARCHAR(255)',
-        'FHCI_DOC': 'TIMESTAMP',
         'SALA_DOC': 'VARCHAR(255)',
         'ID_CIA': 'VARCHAR(255)',
         'ID_EMP': 'VARCHAR(255)',
@@ -167,9 +165,8 @@ PREDEFINED_FIELDS = {
         'OBS_EMP': 'VARCHAR(255)',
         'USU_SIS': 'VARCHAR(255)',
         'UC_SIS': 'VARCHAR(255)',
-        'FHC_SIS': 'TIMESTAMP',
+        'FHC_SIS': 'VARCHAR(255)',
         'UM_SIS': 'VARCHAR(255)',
-        'FHM_SIS': 'TIMESTAMP',
         'EST_EMP': 'DECIMAL(10,2)'
     },
     'SC0004': {
@@ -199,9 +196,8 @@ PREDEFINED_FIELDS = {
         'TDI_PAC': 'VARCHAR(255)',
         'USUM_SIS': 'VARCHAR(255)',
         'UC_SIS': 'VARCHAR(255)',
-        'FHC_SIS': 'TIMESTAMP',
+        'FHC_SIS': 'VARCHAR(255)',
         'UM_SIS': 'VARCHAR(255)',
-        'FHM_SIS': 'TIMESTAMP',
         'EST_PAC': 'DECIMAL(10,2)'
     },
     'SC0033': {
@@ -228,8 +224,7 @@ PREDEFINED_FIELDS = {
         'OBS_DEV': 'TEXT',
         'UC_SIS': 'VARCHAR(255)',
         'UM_SIS': 'VARCHAR(255)',
-        'FC_SIS': 'TIMESTAMP',
-        'FM_SIS': 'TIMESTAMP'
+        'FC_SIS': 'VARCHAR(255)',
     },
     'SC0017': {
         'NUM_FAC': 'VARCHAR(255)',
@@ -276,9 +271,8 @@ PREDEFINED_FIELDS = {
         'ID_PAR': 'VARCHAR(255)',
         'ID_CJ': 'VARCHAR(255)',
         'UC_SIS': 'VARCHAR(255)',
-        'FC_SIS': 'TIMESTAMP',
+        'FC_SIS': 'VARCHAR(255)',
         'UM_SIS': 'VARCHAR(255)',
-        'FM_SIS': 'TIMESTAMP'
     },
     'SC0002': {
         'ID_CIA': 'VARCHAR(255)',
@@ -323,9 +317,8 @@ PREDEFINED_FIELDS = {
         'NUM_CP': 'VARCHAR(255)',
         'REF_SER': 'VARCHAR(255)',
         'UC_SIS': 'VARCHAR(255)',
-        'FHC_SIS': 'TIMESTAMP',
+        'FHC_SIS': 'VARCHAR(255)',
         'UM_SIS': 'VARCHAR(255)',
-        'FHM_SIS': 'TIMESTAMP',
         'DTO_SER': 'DECIMAL(10,2)',
         'ISDTO_SER': 'DECIMAL(10,2)',
     },
