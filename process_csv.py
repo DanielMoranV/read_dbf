@@ -57,6 +57,7 @@ def process_csv(csv_path, table_name):
 
     if 'cod_ser' in df.columns:
         df['cod_ser'] = pd.to_numeric(df['cod_ser'], errors='coerce')
+        df = df.dropna(subset=['cod_ser'])
         df['cod_ser'] = df['cod_ser'].round().astype(
             int)
 
@@ -68,16 +69,19 @@ def process_csv(csv_path, table_name):
 
     if 'cod_pac' in df.columns:
         df['cod_pac'] = pd.to_numeric(df['cod_pac'], errors='coerce')
+        df = df.dropna(subset=['cod_pac'])
         df['cod_pac'] = df['cod_pac'].round().astype(
             int)
 
     if 'nh_pac' in df.columns:
         df['nh_pac'] = pd.to_numeric(df['nh_pac'], errors='coerce')
+        df = df.dropna(subset=['nh_pac'])
         df['nh_pac'] = df['nh_pac'].round().astype(
             int)
 
     if 'cod_cia' in df.columns:
         df['cod_cia'] = pd.to_numeric(df['cod_cia'], errors='coerce')
+        df = df.dropna(subset=['cod_cia'])
         df['cod_cia'] = df['cod_cia'].astype(
             int).astype(str).str.zfill(2)
 
